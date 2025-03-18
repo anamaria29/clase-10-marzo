@@ -1,3 +1,17 @@
+from fastapi import FastAPI, status, HTTPException
+from fastapi.responses import JSONResponse
+import pandas as pd
+import joblib
+
+app = FastAPI(
+    title="Deploy breast cancer model",
+    version="0.0.1"
+)
+
+
+model= joblib.load("model/logistic_regression_model.pkl")
+
+
 @app.post("/api/v1/predict-breast-cancer", tags=["breast-cancer"])
 async def predict(
     radius_mean: float,
@@ -76,3 +90,13 @@ async def predict(
             detail=str(e),
             status_code=status.HTTP_400_BAD_REQUEST
         )
+
+import uvicorn
+
+if __name__ == "__main__":
+    uvicorn.run(
+        "endpoints:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True  # Optional: Enables auto-reloading in development
+    )
